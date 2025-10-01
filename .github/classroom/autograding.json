@@ -1,0 +1,54 @@
+{
+    "tests": [
+        {
+            "name": "RGB to HEX conversion",
+            "setup": "npm install; npm install -D vitest",
+            "run": "npx vitest run tests/rgbToHex.test.ts",
+            "input": "",
+            "output": "",
+            "comparison": "exact",
+            "timeout": 2,
+            "points": 25
+        },
+        {
+            "name": "HEX to RGB conversion",
+            "setup": "npm install; npm install -D vitest",
+            "run": "npx vitest run tests/hexToRgb.test.ts",
+            "input": "",
+            "output": "",
+            "comparison": "exact",
+            "timeout": 2,
+            "points": 25
+        },
+        {
+            "name": "Preview HTML endpoint",
+            "setup": "npm install; npm install -D vitest",
+            "run": "npx vitest run tests/preview.test.ts",
+            "input": "",
+            "output": "",
+            "comparison": "exact",
+            "timeout": 2,
+            "points": 25
+        },
+        {
+            "name": "Error handling and code quality",
+            "setup": "npm install; npm install -D vitest",
+            "run": "npx vitest run tests/errorHandling.test.ts",
+            "input": "",
+            "output": "",
+            "comparison": "exact",
+            "timeout": 2,
+            "points": 15
+        },
+        {
+            "name": "TypeScript and linting checks",
+            "setup": "npm install; npm install -D typescript",
+            "run": "npx tsc --noEmit",
+            "input": "",
+            "output": "",
+            "comparison": "exact",
+            "timeout": 2,
+            "points": 10
+        }
+    ]
+}
