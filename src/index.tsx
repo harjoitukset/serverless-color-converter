@@ -1,6 +1,5 @@
 import { Hono } from 'hono';
 import { FrontPage, Page } from './components';
-import { hexToRgb, rgbToHex } from './converters';
 import { anyColorMiddleware, hexMiddleware, rgbMiddleware } from './middlewares';
 
 const app = new Hono();
@@ -9,27 +8,26 @@ app.get('/', (c) => {
   return c.html(<FrontPage />);
 });
 
-app.get('/hex-to-rgb', hexMiddleware, (c) => {
-  const hex = c.var.hex;
-
-  return c.json(hexToRgb(hex));
-});
-
 app.get('/rgb-to-hex', rgbMiddleware, (c) => {
-  const rgb = c.var.rgb;
+  const rgb = c.var.color;
 
   return c.json({
-    hex: rgbToHex(rgb)
+    hex: rgb.toHex()
   });
 });
 
+app.get('/hex-to-rgb', hexMiddleware, (c) => {
+  const color = c.var.color;
+
+  return c.json(color);
+});
+
 app.get('/preview', anyColorMiddleware, (c) => {
-  const hex = c.var.hex;
-  const rgb = c.var.rgb;
+  const color = c.var.color;
 
   return c.html(
-    <Page background={hex}>
-      <h1>Color Preview: {hex}, {JSON.stringify(rgb)}</h1>
+    <Page background={color}>
+      <h1>Color Preview: {color.toHex()}, {JSON.stringify(color)}</h1>
     </Page>
   );
 });
