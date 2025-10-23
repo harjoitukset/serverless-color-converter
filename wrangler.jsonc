@@ -1,8 +1,19 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "serverless-color-converter-swd1tn002",
+  "name": "serverless-color-converter",
   "main": "src/index.tsx",
-  "compatibility_date": "2025-10-01"
+  "compatibility_date": "2025-10-01",
+	"upload_source_maps": true,
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "openapi-template-db",
+			"database_id": "18d141d5-062d-46a0-a92a-bade3f8c4b00"
+		}
+	]
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],

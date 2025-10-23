@@ -1,3 +1,8 @@
+import type { Context } from "hono";
+
+export type AppContext = Context<{ Bindings: CloudflareBindings }>;
+export type HandleArgs = [AppContext];
+
 export class Color {
     constructor(
         readonly r: number,
