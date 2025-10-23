@@ -11,21 +11,59 @@ Harjoituksessa käytämme Node.js:ää ja npm:ää, jotka sinulla tulee olla val
 
 ## Tehtävän suorittaminen
 
-Tämän tehtävän suorittamiseksi sinun tulee perehtyä [Honon dokumentaatioon](https://hono.dev/docs/). Tässä readme-tiedostossa olevat ohjeet täydentävät virallista dokumentaatiota ja tarkentavat serverless-funktioidesi vaatimuksia.
+Chanfana(https://chanfana.pages.dev/) on kirjasto, joka lisää OpenAPI 3 ja 3.1 -määrittelyt Hono-sovelluksiin. Se mahdollistaa automaattisen dokumentaation luomisen ja pyynnön validoinnin TypeScriptin avulla.
 
-Aloita kloonaamalla kopio tehtävärepositoriosta omalle koneellesi. Avaa repositorio VS Code:ssa sekä komentorivillä. Tehtävän edetessä tee uusia committeja ja pushaa ne GitHubiin.
+### Asennus
 
+Asenna Chanfana ja tarvittavat riippuvuudet:
+
+```bash
+npm install chanfana @hono/standard-validator zod
+```
+Luo `src/index.ts`-tiedostoon seuraava koodi:
+
+```typescript
+import { Hono } from 'hono'
+import { fromHono } from 'chanfana'
+import { z } from 'zod'
+
+const app = new Hono()
+
+// Määrittele Zod-skeema
+const rgbSchema = z.object({
+  r: z.number().min(0).max(255),
+  g: z.number().min(0).max(255),
+  b: z.number().min(0).max(255),
+})
+
+// Lisää Chanfana OpenAPI-tuki
+const openApi = fromHono(app, {
+  title: 'Värimuunnin API',
+  version: '1.0.0',
+  description: 'API väreille HEX ja RGB muunnoksille',
+  schemas: {
+    RGB: rgbSchema,
+  },
+})
+
+// Lisää reitit
+app.get('/rgb-to-hex', (c) => {
+  const { r, g, b } = c.req.query()
+  const hex = `#${(+r).toString(16).padStart(2, '0').toUpperCase()}${(+g).toString(16).padStart(2, '0').toUpperCase()}${(+b).toString(16).padStart(2, '0').toUpperCase()}`
+  return c.json({ hex })
+})
+
+export default openApi
+```
 
 ## Toiminnalliset vaatimukset
 
-Tässä tehtävässä tarkoituksenasi on toteuttaa HTTP-pyyntöihin vastaavia funktioita, jotka muuntavat värejä [HEX- ja RGB-muotojen](https://en.wikipedia.org/wiki/Web_colors) välillä.
+Chanfana luo automaattisesti OpenAPI-dokumentaation määrittelemistäsi reiteistä ja skeemoista. Voit tarkastella tätä dokumentaatiota esimerkiksi käyttämällä [Swagger UI:tä](https://swagger.io/tools/swagger-ui/).
 
-HEX ja RGB ovat yleisimpiä tapoja esittää värejä web-kehityksessä. Molemmissa muodoissa väri määritellään punaisen, vihreän ja sinisen (**R**ed, **G**reen, **B**lue) komponenttien avulla. HEX-muodossa väri esitetään kuusinumeroisena [heksadesimaalilukuna](https://fi.wikipedia.org/wiki/Heksadesimaalij%C3%A4rjestelm%C3%A4), kun taas RGB-muodossa väri esitetään kolmella desimaaliluvulla. Molemmat kuvaavat samaa väriä ja niiden välillä voidaan tehdä suoraviivaisia muunnoksia.
+Dokumentaatio sisältää tiedot pyynnön parametreista, vastausmuodoista ja mahdollisista virhetilanteista.
+Zod on kirjasto joka tarjoaa vahvan tyypityksen ja validoinnin TypeScriptissä. Chanfana toimii Zod:in kanssa jolloin voit määritellä skeemat ja validoida pyynnöt ennen niiden käsittelyä.
 
-Esimerkiksi RGB-arvo `255, 0, 0` vastaa HEX-arvoa `#FF0000`, joka edustaa punaista väriä. `0, 255, 0` eli vihreä voidaan esittää muodossa `#00FF00`, kun taas valkoinen on `255, 255, 255` (`#FFFFFF`) ja musta on `0, 0, 0` (`#000000`).
-
-Esimerkiksi MDN:n ["Color format converter" -työkalu](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_colors/Color_format_converter) tukee samankaltaisia ominaisuuksia kuin tässä tehtävässä toteutettavat funktiot, joten voit käyttää sitä apuna idean ymmärtämisessä. Tässä tehtävässä ei tarvitse ottaa kantaa mahdolliseen värien läpinäkyvyyteen.
-
+Esimerkiksi yllä olevassa esimerkissä `rgbSchema` määrittelee, että `r`, `g` ja `b` -parametrien tulee olla lukuja välillä 0–255. Jos nämä ehdot eivät täyty, pyyntö hylätään automaattisesti.
 
 ### Projektin luominen
 
@@ -149,19 +187,8 @@ Tarkista, että olet lisännyt tekemäsi muutokset versionhallintaan ja tee comm
 Voit lähettää ratkaisusi uudestaan niin monesti kuin haluat tehtävän määräaikaan asti. Viimeisimmän arvioinnin pisteet jäävät voimaan.
 
 
-## Lopuksi: mikä ihmeen serverless?
-
-Paikallisessa kehityksessä tässä tehtävässä työstetty serverless-sovellus ei juuri eronnut palvelinpohjaisista sovelluksista. Tehtävässä tarvitsit oman Node.js-prosessin, joka kuunteli HTTP-pyyntöjä tietyssä portissa.
-
-Tuotantokäytössä funktiosi voidaan kuitenkin ajaa ilman omaa pitkään käynnissä olevaa palvelinprosessia, jolloin maksat vain siitä ajasta, kun funktiosi todella suoritetaan. Tämä voi olla kustannustehokasta, erityisesti silloin, kun sovelluksesi ei ole jatkuvasti käytössä.
-
-Sovelluksesi skaalaaminen on myös yksinkertaisempaa, koska palveluntarjoajan kapasiteetti pystyy käsittelemään kuormituksen huiput ilman, että sinun tarvitsee käynnistää tai hallita ylimääräisiä sovelluspalvelimia kuormituksen vaihdellessa.
-
-Serverlessin todellinen luonne tulee siis esiin vasta, kun sovellus julkaistaan pilvipalveluun.
-
-
 ## Tietoa harjoituksesta
 
-Tämän tehtävän on kehittänyt Teemu Havulinna ja se on lisensoitu [Creative Commons BY-NC-SA -lisenssillä](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+Tämän tehtävän on kehittänyt Teemu Havulinna ja Ismo Harjunmaa ja se on lisensoitu [Creative Commons BY-NC-SA -lisenssillä](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 Tehtävänannon, lähdekoodien ja testien toteutuksessa on hyödynnetty ChatGPT-kielimallia sekä GitHub copilot -tekoälyavustinta.
