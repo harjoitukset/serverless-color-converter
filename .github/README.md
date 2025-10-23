@@ -1,4 +1,4 @@
-# Serverless Color Converter mmuntaminen API
+# Serverless Color Converter API käyttö
 
 Tässä projektissa laajennamme alkuperäistä serverless-color-converter-tehtävää lisäämällä siihen Zod OpenAPI -tuen, joka mahdollistaa vahvan tyypityksen ja automaattisen OpenAPI-dokumentaation luomisen.
 
